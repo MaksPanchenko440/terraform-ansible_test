@@ -1,0 +1,21 @@
+---
+# Главный playbook. Роли выполняются по порядку:
+# сначала общая настройка всех машин, затем роли для каждой группы.
+
+- name: Base setup for all machines
+  hosts: all
+  become: true            # выполнять команды от root (sudo)
+  roles:
+    - base
+
+- name: Reverse proxy on port 3000
+  hosts: proxy
+  become: true
+  roles:
+    - proxy
+
+- name: Web servers with Hello page
+  hosts: web
+  become: true
+  roles:
+    - web

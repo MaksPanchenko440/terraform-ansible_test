@@ -1,0 +1,12 @@
+# Файл создан Ansible (роль proxy). Не редактировать вручную.
+# Запросы на порт 3000 передаются на порт 80 первого веб-сервера из группы web.
+server {
+    listen 3000;
+
+    location / {
+        # hostvars[...] — переменные другой машины из inventory; здесь берём IP vm2.
+        proxy_pass http://{{ hostvars[groups['web'][0]].ansible_host }}:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}

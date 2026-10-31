@@ -1,0 +1,22 @@
+---
+# Роль web: Nginx отдаёт страницу "Hello from <имя машины>!".
+
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+# Страница создаётся из шаблона; имя и группа подставляются из magic variables.
+- name: Deploy the Hello page
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: "0644"
+
+- name: Start nginx and enable it on boot
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

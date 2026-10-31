@@ -1,0 +1,28 @@
+---
+# Роль base: имя машины и стандартные пакеты.
+
+# Имя машины берётся из inventory: magic variable inventory_hostname (например, vm2).
+- name: Set hostname to the inventory name
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
+# Чтобы sudo не выдавал предупреждений, имя машины должно быть в /etc/hosts.
+- name: Keep /etc/hosts in sync with the hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1 {{ inventory_hostname }}"
+
+# Стандартные пакеты из задания.
+- name: Install base packages
+  ansible.builtin.apt:
+    name:
+      - net-tools
+      - dnsutils
+      - wget
+      - curl
+      - mc
+      - rsync
+    state: present
+    update_cache: true
+    cache_valid_time: 3600   # не обновлять список пакетов чаще раза в час

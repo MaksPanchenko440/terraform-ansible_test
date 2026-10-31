@@ -1,0 +1,39 @@
+---
+# Роль proxy: Nginx на машине vm1 принимает запросы на порт 3000
+# и передаёт их на порт 80 веб-сервера из группы web.
+
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+# Кладём конфиг прокси из шаблона. Если файл изменился, nginx перезагрузится (handler).
+- name: Deploy reverse proxy config
+  ansible.builtin.template:
+    src: proxy.conf.j2
+    dest: /etc/nginx/sites-available/proxy.conf
+    mode: "0644"
+  notify: Reload nginx
+
+# Включаем наш сайт: создаём символическую ссылку в sites-enabled.
+- name: Enable proxy site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/proxy.conf
+    dest: /etc/nginx/sites-enabled/proxy.conf
+    state: link
+  notify: Reload nginx
+
+# Отключаем стандартный сайт Nginx, он слушает порт 80 и нам не нужен.
+- name: Disable default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
+
+- name: Start nginx and enable it on boot
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

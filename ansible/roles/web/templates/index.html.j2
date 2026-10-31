@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{{ inventory_hostname }}</title>
+</head>
+<body>
+  <!-- Группы машины (magic variable group_names): {{ group_names | join(', ') }} -->
+  <h1>Hello from {{ inventory_hostname }}!</h1>
+</body>
+</html>

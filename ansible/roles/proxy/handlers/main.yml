@@ -1,0 +1,6 @@
+---
+# Handler: выполняется только тогда, когда задача сообщила об изменении (notify).
+- name: Reload nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
